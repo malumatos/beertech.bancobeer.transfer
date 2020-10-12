@@ -7,6 +7,7 @@ import static org.springframework.http.HttpStatus.OK;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -17,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,25 +52,30 @@ public class OperationController {
         return operationService.ListaTransacoes();
     }
 
-    @GetMapping("/saldo")
-    public ResponseEntity<Saldo> listSaldo() {
-        try
-        {
-            List<Operacao> transacoes = operationService.ListaTransacoes();
-            Saldo Saldo = saldoService.calcularSaldo(
-                    transacoes.stream().map(Operacao::toOperacaoDto).collect(Collectors.toList()));
+    @GetMapping("/saldo/{identificador}")
+    public ResponseEntity<Saldo> listSaldo(@PathVariable String identificador) {
+        Optional<ContaCorrente> contaCorrente = contaCorrenteService.findByIdentificador(identificador);
+        if (contaCorrente.isPresent()) {
+            List<Operacao> transacoes = contaCorrenteService.listOperacoesByContaCorrente(identificador);
+            Saldo Saldo = saldoService
+                    .calcularSaldo(transacoes.stream().map(Operacao::toOperacaoDto).collect(Collectors.toList()));
             return new ResponseEntity<>(Saldo, OK);
         }
-        catch (Exception e)
-        {
-            throw e;
-        }
+
+        return ResponseEntity.notFound().build();
     }
 
-    @PostMapping("/operacao")
-    public ResponseEntity<Operacao> saveOperations(@RequestBody OperacaoDto operacaoDto) {
-        Operacao operacao = new Operacao(operacaoDto);
-        return new ResponseEntity<>(operationService.NovaTransacao(operacao), CREATED);
+    @PostMapping("/operacao/{identificador}")
+    public ResponseEntity<Operacao> saveOperations(@PathVariable String identificador,
+            @RequestBody OperacaoDto operacaoDto) {
+        Optional<ContaCorrente> contaCorrente = contaCorrenteService.findByIdentificador(identificador);
+        if (contaCorrente.isPresent()) {
+            Operacao operacao = new Operacao(operacaoDto);
+            operacao.setContaCorrente(contaCorrente.get());
+            return new ResponseEntity<>(operationService.NovaTransacao(operacao), CREATED);
+        }
+
+        return ResponseEntity.notFound().build();
     }
 
     @GetMapping("/contascorrentes")
