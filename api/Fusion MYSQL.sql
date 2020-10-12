@@ -53,3 +53,12 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2020-10-10  3:18:19
+
+
+--Adiciona tabela de conta corrente
+CREATE TABLE `tb_conta_corrente` (
+  `id_conta_corrente` bigint(20) NOT NULL AUTO_INCREMENT,
+  `cd_identificador` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id_conta_corrente`),
+  CONSTRAINT `uk_identificador` UNIQUE (`cd_identificador`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
