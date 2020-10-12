@@ -37,7 +37,7 @@ public class OperationController {
         {
             List<Operacao> transacoes = operationService.ListaTransacoes();
             Saldo Saldo = saldoService.calcularSaldo(
-                    transacoes.stream().map(Operacao::getOperacaoDto).collect(Collectors.toList()));
+                    transacoes.stream().map(Operacao::toOperacaoDto).collect(Collectors.toList()));
             return new ResponseEntity<>(Saldo, OK);
         }
         catch (Exception e)

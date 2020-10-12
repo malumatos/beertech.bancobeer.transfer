@@ -6,13 +6,17 @@ import java.util.Date;
 import java.util.Objects;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import br.com.beertech.fusion.controller.dto.OperacaoDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import br.com.beertech.fusion.controller.dto.OperacaoDto;
 
 @Entity
 @Table(name = "operacao")
@@ -31,7 +35,9 @@ public class Operacao implements Serializable {
     private int tipoOperacao;
     private Double valorOperacao;
 
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_conta_corrente", nullable = false)
+    private ContaCorrente contaCorrente;
 
     public Operacao() {
     }
@@ -42,8 +48,7 @@ public class Operacao implements Serializable {
         this.horarioOperacao = getDataAtual();
     }
 
-    @JsonIgnore
-    public OperacaoDto getOperacaoDto() {
+    public OperacaoDto toOperacaoDto() {
         return new OperacaoDto(OperationType.getById(this.tipoOperacao), this.valorOperacao);
     }
     

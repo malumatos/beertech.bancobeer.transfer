@@ -21,7 +21,6 @@ public class Saldo implements Serializable {
         this.saldo = saldo;
     }
 
-
     @Override
     public int hashCode() {
         return Objects.hash(saldo);
@@ -29,6 +28,13 @@ public class Saldo implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        return this == obj || (obj != null && obj instanceof Saldo && saldo.equals(((Saldo) obj).getSaldo()));
+        if (obj == this)
+            return true;
+        if (!(obj instanceof Saldo))
+            return false;
+
+        Saldo other = (Saldo) obj;
+        return (getSaldo() == null && other.getSaldo() == null)
+                || (getSaldo() != null && getSaldo().equals(other.getSaldo()));
     }
 }
