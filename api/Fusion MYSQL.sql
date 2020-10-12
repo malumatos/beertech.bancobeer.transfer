@@ -62,3 +62,10 @@ CREATE TABLE `tb_conta_corrente` (
   PRIMARY KEY (`id_conta_corrente`),
   CONSTRAINT `uk_identificador` UNIQUE (`cd_identificador`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+
+--Adiciona coluna para conta corrente na table de operacao
+ALTER TABLE `operacao`
+ADD `id_conta_corrente` bigint(20) NOT NULL;
+--Adiciona FK na coluna da conta corrente na table de operacao
+ALTER TABLE `operacao`
+ADD CONSTRAINT `fk_conta_corrente` FOREIGN KEY (`id_conta_corrente`) REFERENCES `tb_conta_corrente`(`id_conta_corrente`);
