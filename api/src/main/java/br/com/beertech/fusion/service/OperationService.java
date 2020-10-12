@@ -1,8 +1,8 @@
 package br.com.beertech.fusion.service;
 
-import br.com.beertech.fusion.domain.Operacao;
-
 import java.util.List;
+
+import br.com.beertech.fusion.domain.Operacao;
 
 public interface OperationService {
 
@@ -11,6 +11,5 @@ public interface OperationService {
     void RemoveTransacao(Long idBeer);
 
     List<Operacao> ListaTransacoes();
-
 
 }
