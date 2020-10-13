@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.beertech.fusion.controller.dto.OperacaoDto;
+import br.com.beertech.fusion.controller.dto.TransferenciaDto;
 import br.com.beertech.fusion.domain.ContaCorrente;
 import br.com.beertech.fusion.domain.Operacao;
 import br.com.beertech.fusion.domain.Saldo;
@@ -79,4 +80,17 @@ public class OperationController {
         return new ResponseEntity<>(contaCorrentePersisted, CREATED);
     }
 
+    @PostMapping("/transferencia")
+    public ResponseEntity<TransferenciaDto> realizarTransferencia(@RequestBody TransferenciaDto transferenciaDto) {
+        Optional<ContaCorrente> contaCorrenteOrigem = contaCorrenteService
+                .findByIdentificador(transferenciaDto.getIdentificadorContaOrigem());
+        Optional<ContaCorrente> contaCorrenteDestino = contaCorrenteService
+                .findByIdentificador(transferenciaDto.getIdentificadorContaDestino());
+        if (contaCorrenteOrigem.isPresent() && contaCorrenteDestino.isPresent()) {
+            contaCorrenteService.realizarTransferencia(contaCorrenteOrigem.get(), contaCorrenteDestino.get(),
+                    transferenciaDto.getValorTransferido());
+            return new ResponseEntity<>(transferenciaDto, CREATED);
+        }
+        return ResponseEntity.notFound().build();
+    }
 }

@@ -15,4 +15,6 @@ public interface ContaCorrenteService {
     Optional<ContaCorrente> findByIdentificador(String identificador);
 
     List<Operacao> listOperacoesByContaCorrente(String identificador);
+
+    void realizarTransferencia(ContaCorrente origem, ContaCorrente destino, Double valor);
 }

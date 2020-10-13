@@ -12,22 +12,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.beertech.fusion.domain.ContaCorrente;
 import br.com.beertech.fusion.domain.Operacao;
+import br.com.beertech.fusion.domain.OperationType;
 import br.com.beertech.fusion.repository.ContaCorrenteRepository;
 import br.com.beertech.fusion.service.ContaCorrenteService;
+import br.com.beertech.fusion.service.OperationService;
 
 @Service
 public class ContaCorrenteServiceImpl implements ContaCorrenteService {
 
     private Logger logger = LoggerFactory.getLogger(ContaCorrenteService.class);
 
-    private ContaCorrenteRepository contaCorrenteRepository;
+    private final ContaCorrenteRepository contaCorrenteRepository;
+
+    private final OperationService operationService;
 
     @Autowired
-    public ContaCorrenteServiceImpl(ContaCorrenteRepository contaCorrenteRepository) {
+    public ContaCorrenteServiceImpl(ContaCorrenteRepository contaCorrenteRepository,
+            OperationService operationService) {
         this.contaCorrenteRepository = contaCorrenteRepository;
+        this.operationService = operationService;
     }
 
     @Override
@@ -58,6 +65,21 @@ public class ContaCorrenteServiceImpl implements ContaCorrenteService {
     @Override
     public List<Operacao> listOperacoesByContaCorrente(String identificadorContaCorrente) {
         return contaCorrenteRepository.listOperacoesByContaCorrente(identificadorContaCorrente);
+    }
+
+    @Override
+    @Transactional
+    public void realizarTransferencia(ContaCorrente origem, ContaCorrente destino, Double valor) {
+        Operacao operacaoDebito = new Operacao();
+        operacaoDebito.setContaCorrente(origem);
+        operacaoDebito.setTipoOperacao(OperationType.SAQUE.ID);
+        operacaoDebito.setValorOperacao(valor);
+        operationService.NovaTransacao(operacaoDebito);
+        Operacao operacaoCredito = new Operacao();
+        operacaoCredito.setContaCorrente(destino);
+        operacaoCredito.setTipoOperacao(OperationType.DEPOSITO.ID);
+        operacaoCredito.setValorOperacao(valor);
+        operationService.NovaTransacao(operacaoCredito);
     }
 
 }

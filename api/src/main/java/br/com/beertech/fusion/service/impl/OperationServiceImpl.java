@@ -1,17 +1,18 @@
 package br.com.beertech.fusion.service.impl;
 
-import br.com.beertech.fusion.domain.Operacao;
-import br.com.beertech.fusion.repository.OperationRepository;
-import br.com.beertech.fusion.service.OperationService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import br.com.beertech.fusion.domain.Operacao;
+import br.com.beertech.fusion.repository.OperationRepository;
+import br.com.beertech.fusion.service.OperationService;
 
 @Service
 public class OperationServiceImpl implements OperationService {
 
-    private OperationRepository operationRepository;
+    private final OperationRepository operationRepository;
 
     @Autowired
     public OperationServiceImpl(OperationRepository operationRepository) {
