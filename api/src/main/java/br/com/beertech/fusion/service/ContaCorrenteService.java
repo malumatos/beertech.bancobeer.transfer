@@ -8,7 +8,7 @@ import br.com.beertech.fusion.domain.Operacao;
 
 public interface ContaCorrenteService {
 
-    ContaCorrente novaContaCorrente(ContaCorrente contaCorrente);
+    ContaCorrente novaContaCorrente();
 
     List<ContaCorrente> listContasCorrentes();
 

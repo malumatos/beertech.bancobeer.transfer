@@ -1,8 +1,15 @@
 package br.com.beertech.fusion.service.impl;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
+import javax.xml.bind.DatatypeConverter;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +21,8 @@ import br.com.beertech.fusion.service.ContaCorrenteService;
 @Service
 public class ContaCorrenteServiceImpl implements ContaCorrenteService {
 
+    private Logger logger = LoggerFactory.getLogger(ContaCorrenteService.class);
+
     private ContaCorrenteRepository contaCorrenteRepository;
 
     @Autowired
@@ -22,8 +31,18 @@ public class ContaCorrenteServiceImpl implements ContaCorrenteService {
     }
 
     @Override
-    public ContaCorrente novaContaCorrente(ContaCorrente contaCorrente) {
-        return contaCorrenteRepository.save(contaCorrente);
+    public ContaCorrente novaContaCorrente() {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            String uuid = UUID.randomUUID().toString();
+            String hash = DatatypeConverter.printHexBinary(md.digest(uuid.getBytes()));
+            ContaCorrente novaContaCorrente = new ContaCorrente();
+            novaContaCorrente.setIdentificador(hash);
+            return contaCorrenteRepository.save(novaContaCorrente);
+        } catch (NoSuchAlgorithmException e) {
+            logger.error("Erro ao criar conta corrente", e);
+            throw new RuntimeException("Erro ao criar conta corrente", e);
+        }
     }
 
     @Override
