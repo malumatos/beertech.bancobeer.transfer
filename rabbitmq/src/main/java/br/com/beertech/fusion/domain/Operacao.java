@@ -29,8 +29,6 @@ public class Operacao implements Serializable {
         this.valorOperacao = valorOperacao;
     }
 
-
-
     @Override
     public int hashCode() {
         return Objects.hash(tipoOperacao, valorOperacao);

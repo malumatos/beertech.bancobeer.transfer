@@ -5,6 +5,8 @@ import static org.springframework.http.HttpStatus.OK;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,9 +89,14 @@ public class OperationController {
         Optional<ContaCorrente> contaCorrenteDestino = contaCorrenteService
                 .findByIdentificador(transferenciaDto.getIdentificadorContaDestino());
         if (contaCorrenteOrigem.isPresent() && contaCorrenteDestino.isPresent()) {
-            contaCorrenteService.realizarTransferencia(contaCorrenteOrigem.get(), contaCorrenteDestino.get(),
+            CompletableFuture<TransferenciaDto> futureTransferencia = contaCorrenteService.realizarTransferencia(
+                    contaCorrenteOrigem.get(), contaCorrenteDestino.get(),
                     transferenciaDto.getValorTransferido());
-            return new ResponseEntity<>(transferenciaDto, CREATED);
+            try {
+                return new ResponseEntity<>(futureTransferencia.get(), CREATED);
+            } catch (InterruptedException | ExecutionException e) {
+
+            }
         }
         return ResponseEntity.notFound().build();
     }

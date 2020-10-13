@@ -5,15 +5,18 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import javax.xml.bind.DatatypeConverter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.beertech.fusion.controller.dto.TransferenciaDto;
 import br.com.beertech.fusion.domain.ContaCorrente;
 import br.com.beertech.fusion.domain.Operacao;
 import br.com.beertech.fusion.domain.OperationType;
@@ -69,7 +72,9 @@ public class ContaCorrenteServiceImpl implements ContaCorrenteService {
 
     @Override
     @Transactional
-    public void realizarTransferencia(ContaCorrente origem, ContaCorrente destino, Double valor) {
+    @Async("threadPoolTaskExecutor")
+    public CompletableFuture<TransferenciaDto> realizarTransferencia(ContaCorrente origem, ContaCorrente destino,
+            Double valor) {
         Operacao operacaoDebito = new Operacao();
         operacaoDebito.setContaCorrente(origem);
         operacaoDebito.setTipoOperacao(OperationType.SAQUE.ID);
@@ -80,6 +85,12 @@ public class ContaCorrenteServiceImpl implements ContaCorrenteService {
         operacaoCredito.setTipoOperacao(OperationType.DEPOSITO.ID);
         operacaoCredito.setValorOperacao(valor);
         operationService.NovaTransacao(operacaoCredito);
+
+        TransferenciaDto transferencia = new TransferenciaDto();
+        transferencia.setIdentificadorContaOrigem(origem.getIdentificador());
+        transferencia.setIdentificadorContaDestino(destino.getIdentificador());
+        transferencia.setValorTransferido(valor);
+        return CompletableFuture.completedFuture(transferencia);
     }
 
 }
