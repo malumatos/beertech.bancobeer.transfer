@@ -10,6 +10,7 @@ public class Operacao implements Serializable {
 
     private String tipoOperacao;
     private Double valorOperacao;
+    private String identificadorContaCorrente;
 
     public Operacao() { }
 
@@ -29,9 +30,23 @@ public class Operacao implements Serializable {
         this.valorOperacao = valorOperacao;
     }
 
+    public String getIdentificadorContaCorrente() {
+        return identificadorContaCorrente;
+    }
+
+    public void setIdentificadorContaCorrente(String identificadorContaCorrente) {
+        this.identificadorContaCorrente = identificadorContaCorrente;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(tipoOperacao, valorOperacao);
+    }
+
+    @Override
+    public String toString() {
+        return "Operacao [tipoOperacao=" + tipoOperacao + ", valorOperacao=" + valorOperacao
+                + ", identificadorContaCorrente=" + identificadorContaCorrente + "]";
     }
 
 }
