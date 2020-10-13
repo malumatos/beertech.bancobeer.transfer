@@ -39,12 +39,13 @@ public class Operacao implements Serializable {
     private ContaCorrente contaCorrente;
 
     public Operacao() {
+        this.horarioOperacao = getDataAtual();
     }
 
     public Operacao(OperacaoDto operacaoDto) {
+        this();
         this.tipoOperacao = operacaoDto.getTipoOperacao().ID;
         this.valorOperacao = operacaoDto.getValorOperacao();
-        this.horarioOperacao = getDataAtual();
     }
 
     public OperacaoDto toOperacaoDto() {
